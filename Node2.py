@@ -58,15 +58,6 @@ class Node():
     def get_outgoing(self):
         return self.outgoing
 
-    def get_state(self):
-        return self.sate
-
-    def return_last_level(self):
-        level = []
-        if self.has_edges():
-            for edge in self.outgoing:
-                if edge.has_child():
-                    level += edge.child.return_last_level()
                 else:
                     level.append(edge)
         else:
