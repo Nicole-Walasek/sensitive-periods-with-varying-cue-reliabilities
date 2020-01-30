@@ -885,7 +885,7 @@ if __name__ == '__main__':
                     print "computing plasticity following temporary separation measured at the end of exposure"
                     runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
                              mainPath, argumentR,
-                             argumentP, lag, adoptionType, True, plotVar,plotArgs,performSimulation)
+                             argumentP, lag, adoptionType, True,plotArgs, plotVar,performSimulation)
 
 
 
