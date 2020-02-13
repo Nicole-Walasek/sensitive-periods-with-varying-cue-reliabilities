@@ -1801,6 +1801,10 @@ def runPlots(priorE0Arr, cueValidityC0E0Arr, TParam, numAgents, twinResultsPath,
                                               endOfExposure)
                 plotSimulationStudy(arg, priorE0Arr, cueValidityC0E0Arr, T, twinResultsPath, lag, adoptionType,
                                     endOfExposure, plotVar)
+        elif arg == 'BeliefTwinstudy':
+            T = TParam
+            plotSimulationStudy(arg, markovProbabilities, cueValidityC0E0Arr, T, twinResultsPath, None, adoptionType,
+                                endOfExposure, plotVar)
 
         else:
             T = TParam
