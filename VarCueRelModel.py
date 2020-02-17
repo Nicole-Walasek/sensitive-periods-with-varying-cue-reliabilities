@@ -691,7 +691,7 @@ if __name__ == '__main__':
                                 # simulate twins and/or mature phenotypes
 
     # this is the directory where modeling results are stored
-    mainPath = "/home/nicole/PhD/runTestSubmission"
+    mainPath = "ADD PATH"
     if not os.path.exists(mainPath):
         os.makedirs(mainPath)
     # setting a prior (or an array of priors in case we want to do multiple runs at once)
