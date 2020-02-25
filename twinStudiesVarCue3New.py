@@ -90,6 +90,7 @@ def simulateExperimentalTwins(tAdopt, twinNum, env, cueReliability, lag, T, adop
     pc1E1 is the cue reliability
     :return: phenotypic distance between pairs of twins
     """
+    T = T+lag-1
 
     tValues = np.arange(1, tAdopt, 1)
     if env == 1:
