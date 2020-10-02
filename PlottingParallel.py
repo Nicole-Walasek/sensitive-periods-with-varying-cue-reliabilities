@@ -288,16 +288,22 @@ def policyPlotReduced(T,r,pE0Arr, pC0E0Arr, tValues, dataPath, lines, argumentR,
             if iX == 0:
                 plt.title(str(1-pE0), fontsize = 20)
 
-            if iX == len(pC0E0Arr)-1:
-                plt.xlabel('Time step', fontsize = 20, labelpad=10)
-                plt.xticks(np.arange(2,T,2), fontsize = 12)
-                plt.yticks([1, midPoint, T - 1], yLabels) #this doesn't make sense
+
+            if iX == len(pC0E0Arr) - 1:
+                plt.xticks([], fontsize = 15)
+
 
             else:
                 ax.get_xaxis().set_visible(False)
-            if jX == 0:
-                plt.yticks([1, midPoint, T - 1], yLabels,fontsize = 12)
-                plt.ylabel('pE1', fontsize = 20, labelpad=10)
+
+
+            if jX == 0 and iX == len(pC0E0Arr) - 1:
+                ax.spines['bottom'].set_visible(True)
+                ax.spines['left'].set_visible(True)
+                plt.xlabel("ontogeny", fontsize=20, labelpad=10)
+                plt.yticks([1, midPoint, T - 1], yLabels, fontsize=12)
+                plt.ylabel('estimate', fontsize=20, labelpad=10)
+
 
             if jX == len(pE0Arr) -1:
                 plt.ylabel(str(cueVal),  fontsize = 20,labelpad = 15, rotation = 'vertical')
@@ -308,10 +314,10 @@ def policyPlotReduced(T,r,pE0Arr, pC0E0Arr, tValues, dataPath, lines, argumentR,
             jX += 1
         iX += 1
 
-    plt.suptitle('Prior probability', fontsize = 20)
-    fig.text(0.98,0.5,'Cue reliability', fontsize = 20, horizontalalignment = 'right', verticalalignment = 'center', transform=ax.transAxes, rotation = 'vertical')
+    plt.suptitle('prior probability', fontsize = 20)
+    fig.text(0.98,0.5,'cue reliability', fontsize = 20, horizontalalignment = 'right', verticalalignment = 'center', transform=ax.transAxes, rotation = 'vertical')
     resultPath = os.path.join(mainPath, plottingPath)
-    plt.savefig(os.path.join(resultPath,'DevelopmentalTrajectoryReduced.png'), dpi = 400)
+    plt.savefig(os.path.join(resultPath,'DevelopmentalTrajectoryReduced.png'), dpi = 1200)
 
 
 
