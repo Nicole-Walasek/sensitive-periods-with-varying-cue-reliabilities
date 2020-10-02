@@ -90,8 +90,7 @@ def simulateExperimentalTwins(tAdopt, twinNum, env, cueReliability, lag, T, adop
     pc1E1 is the cue reliability
     :return: phenotypic distance between pairs of twins
     """
-    T = T+lag-1
-
+    T = T +lag -1
     tValues = np.arange(1, tAdopt, 1)
     if env == 1:
         pC1Start = cueReliability[1]  # take the very first cue reliability
@@ -214,10 +213,10 @@ def simulateExperimentalTwins(tAdopt, twinNum, env, cueReliability, lag, T, adop
         cueTrackerDoppel[:, 1] += oppositeCues
 
     restPeriodReunited = np.arange(tAdopt + lag, T + 1, 1)
-
     # need to reverse the last update
     cueTrackerDoppel[:, 0] += -(1 - oppositeCues) + (1 - cuesOriginal)
     cueTrackerDoppel[:, 1] += -(oppositeCues) + cuesOriginal
+
 
     if not endOfExposure:  # this means we want to measure phenotypic distance at the end of onotgeny
         for t3 in restPeriodReunited:
@@ -455,14 +454,14 @@ def runExperimentalTwinStudiesParallel(tAdopt, twinNum, env, pE1, pC1E1, lag, T,
                                        adoptionType, endOfExposure):
     policyPath = os.path.join(resultsPath, 'runTest_%s%s_%s_%s/finalRaw.csv' % (argumentR[0], argumentP[0], pE1, pC1E1))
     setGlobalPolicy(policyPath)
-    simulationChunk = [int(math.ceil(float(twinNum) / 32))] * 32
+    simulationChunk = [int(math.ceil(float(twinNum) / 12))] * 12
 
     # load the cue reliability array
     pC1E1Dict = pickle.load(
         open(os.path.join(resultsPath, 'runTest_%s%s_%s_%s/pC1E1dict.p' % (argumentR[0], argumentP[0], pE1, pC1E1)),
              "rb"))
 
-    pool = Pool(processes=32)
+    pool = Pool(processes=12)
 
     results = pool.map(func_star2, itertools.izip(itertools.repeat(tAdopt),
                                                   simulationChunk, itertools.repeat(env),
@@ -480,7 +479,7 @@ def runTwinStudiesParallel(tAdopt, twinNum, env, pE1, pC1E1, adopt, T, resultsPa
                            allENV):
     policyPath = os.path.join(resultsPath, 'runTest_%s%s_%s_%s/finalRaw.csv' % (argumentR[0], argumentP[0], pE1, pC1E1))
     setGlobalPolicy(policyPath)
-    simulationChunk = [int(math.ceil(float(twinNum) / 32))] * 32
+    simulationChunk = [int(math.ceil(float(twinNum) / 12))] * 12
 
     # load the cue reliability array
     if not allENV:
@@ -488,7 +487,7 @@ def runTwinStudiesParallel(tAdopt, twinNum, env, pE1, pC1E1, adopt, T, resultsPa
             open(os.path.join(resultsPath, 'runTest_%s%s_%s_%s/pC1E1dict.p' % (argumentR[0], argumentP[0], pE1, pC1E1)),
                  "rb"))
 
-        pool = Pool(processes=32)
+        pool = Pool(processes=12)
 
         if adopt:
             results = pool.map(func_star, itertools.izip(itertools.repeat(tAdopt),
@@ -530,7 +529,7 @@ def runTwinStudiesParallel(tAdopt, twinNum, env, pE1, pC1E1, adopt, T, resultsPa
                      "rb"))
             print cueRel
 
-            pool = Pool(processes=32)
+            pool = Pool(processes=12)
 
             if adopt:
 
@@ -575,7 +574,7 @@ def runExperimentalAdoptionExperiment(T, numAgents, env, prior, cueReliability, 
     # proportiional distance: absolute distance divided by maximum possible distance
     # maximum possible distance: 20 * sqrt(2)
     tValues = np.arange(1, T + 1, 1)
-    resultLen = int(math.ceil(float(numAgents) / 32)) * 32
+    resultLen = int(math.ceil(float(numAgents) / 12)) * 12
     results = np.zeros((T, resultLen))
 
     for t in tValues:
@@ -607,7 +606,7 @@ def runAdoptionExperiment(T, numAgents, env, prior, cueReliability, resultsPath,
     # proportional distance: absolute distance divided by maximum possible distance
     # maximum possible distance: 20 * sqrt(2)
     tValues = np.arange(1, T + 1, 1)
-    resultLen = int(math.ceil(float(numAgents) / 32)) * 32
+    resultLen = int(math.ceil(float(numAgents) / 12)) * 12
     results = np.zeros((T, resultLen))
     resultsTempPhenotypes = np.zeros(
         (T, resultLen))  # euclidean distance between original and twin right after exposure
@@ -782,7 +781,7 @@ def plotTriangularPlots(tValues, priorE0Arr, cueValidityArr, maturePhenotypes, T
         plt.suptitle('prior probability', fontsize=20)
         fig.text(0.98, 0.5, 'cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
                  transform=ax.transAxes, rotation='vertical')
-    plt.savefig(os.path.join(twinResultsPath, 'ternary.pdf'), dpi=1200)
+    plt.savefig(os.path.join(twinResultsPath, 'ternary.png'), dpi=1200)
     plt.close()
 
 
@@ -927,7 +926,7 @@ def plotFitnessDifference(priorE0Arr, cueValidityArr, twinResultsPath):
         plt.suptitle('prior probability', fontsize=20)
         fig.text(0.98, 0.5, 'cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
                  transform=ax.transAxes, rotation='vertical')
-    plt.savefig(os.path.join(twinResultsPath, 'fitnessDifferences.pdf'), dpi=1200)
+    plt.savefig(os.path.join(twinResultsPath, 'fitnessDifferences.png'), dpi=1200)
     plt.close()
 
 
@@ -1031,12 +1030,16 @@ def plotRankOrderStability2(priorE0Arr, cueValidityArr, twinResultsPath, T, dist
             elif distFun == "negativeSwitches":
                 sim = calcNegativeRankSwitches(rankDf, T, 'unstable')
                 cmap = 'Greys'  # 'YlGnBu'
-                yLabel = 'time step'
+                yLabel = 'ontogeny'
 
             # only negative rank switches
 
             # create a mask for the upper triangle
             mask = np.tri(sim.shape[0], k=0)
+
+
+
+
             if jx == len(priorE0Arr) - 1 and ix == 0:
                 cbar = True
                 cbar_ax = specialAx
@@ -1089,18 +1092,24 @@ def plotRankOrderStability2(priorE0Arr, cueValidityArr, twinResultsPath, T, dist
             if ix == 0:
                 plt.title(str(1 - pE0), fontsize=20)
 
-            if ix == len(cueValidityArr) - 1:
-                ax.set_xlabel('time step', fontsize=20, labelpad=15)
-            else:
-                ax.get_xaxis().set_visible(False)
-
-            if jx == 0:
+            if ix == len(cueValidityArr) - 1 and jx == 0:
+                ax.set_xlabel('ontogeny', fontsize=20, labelpad=15)
                 ax.yaxis.set_label_position("left")
                 ax.set_ylabel('%s' % yLabel, fontsize=20, labelpad=15)
+
                 ax2.set_yticks(np.arange(0, 1.1, 0.2))
                 ax2.tick_params(labelsize=15)
             else:
+                #ax.get_xaxis().set_visible(False)
                 ax2.set_yticks([])
+
+            # if jx == 0:
+            #     ax.yaxis.set_label_position("left")
+            #     ax.set_ylabel('%s' % yLabel, fontsize=20, labelpad=15)
+            #     ax2.set_yticks(np.arange(0, 1.1, 0.2))
+            #     ax2.tick_params(labelsize=15)
+            # else:
+            #     ax2.set_yticks([])
 
             if jx == len(priorE0Arr) - 1:
                 plt.ylabel(str(cueVal), labelpad=20, rotation='vertical', fontsize=20)
@@ -1111,83 +1120,240 @@ def plotRankOrderStability2(priorE0Arr, cueValidityArr, twinResultsPath, T, dist
         plt.suptitle('prior probability', fontsize=20)
         fig.text(0.98, 0.5, 'cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
                  transform=ax.transAxes, rotation='vertical')
-    plt.savefig(os.path.join(twinResultsPath, 'rankOrderStability2%s.pdf' % distFun), dpi=1200)
+    plt.savefig(os.path.join(twinResultsPath, 'rankOrderStability2%s.png' % distFun), dpi=1200)
     plt.close()
 
-    # second plot is for rank stability
-    fig, axes = plt.subplots(len(cueValidityArr), len(priorE0Arr), sharex=True, sharey=True)
-    specialAx = fig.add_axes([.16, .055, .7, .01])
+    # # second plot is for rank stability
+    # fig, axes = plt.subplots(len(cueValidityArr), len(priorE0Arr), sharex=True, sharey=True)
+    # specialAx = fig.add_axes([.16, .055, .7, .01])
+    # fig.set_size_inches(16, 16)
+    # ax_list = fig.axes
+    # simRange = []
+    # for cueVal in cueValidityArr:
+    #     for pE0 in priorE0Arr:
+    #         rankMatrix = ranks[(pE0, cueVal)]
+    #
+    #         rankDf = pd.DataFrame(rankMatrix)
+    #         rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(axis=0)] + 0.1
+    #
+    #         if distFun == 'cosine':
+    #             sim = cosine_similarity(rankDf.transpose())
+    #         elif distFun == "negativeSwitches":
+    #             sim = calcNegativeRankSwitches(rankDf, T, "stable")
+    #
+    #         simRange += list(sim.flatten())
+    #
+    # boundary1 = min(simRange)
+    # boundary2 = max(simRange)
+    #
+    # ix = 0
+    # for cueVal in cueValidityArr:
+    #     jx = 0
+    #     for pE0 in priorE0Arr:
+    #         ax = ax_list[ix * len(priorE0Arr) + jx]
+    #         plt.sca(ax)
+    #         # loading the ranks for the current prior - cue reliability combination
+    #         rankMatrix = ranks[(pE0, cueVal)]
+    #
+    #         rankDf = pd.DataFrame(rankMatrix)  # convert to pandas dataframe for convenience
+    #         # add a small increment to columns that contain only zero entries, otherwise cosine similarity is not defined
+    #         rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(
+    #             axis=0)] + 0.1  # returns columns that are all zeros
+    #
+    #         # calculating the similarity matrix
+    #         if distFun == 'cosine':
+    #             sim = cosine_similarity(rankDf.transpose())
+    #             cmap = 'YlGnBu'
+    #             yLabel = 'Cosine similarity'
+    #         elif distFun == "negativeSwitches":
+    #             sim = calcNegativeRankSwitches(rankDf, T, 'stable')
+    #             cmap = 'Greys'  # 'YlGnBu'
+    #             yLabel = 'Time step'
+    #
+    #         # only negative rank switches
+    #
+    #         # create a mask for the upper triangle
+    #         mask = np.tri(sim.shape[0], k=0)
+    #         if jx == len(priorE0Arr) - 1 and ix == 0:
+    #             cbar = True
+    #             cbar_ax = specialAx
+    #             cbar_kws = {"orientation": 'horizontal', "fraction": 0.15, "pad": 0.15,
+    #                         'label': "Proportion of stable ranks"}  # 'label':"Proportion of negative rank switches",
+    #             sns.heatmap(sim,
+    #                         xticklabels=createLABELS(T),
+    #                         yticklabels=createLABELS(T), vmin=boundary1 - 0.05, vmax=boundary2, cmap=cmap, mask=mask,
+    #                         cbar=cbar, cbar_ax=cbar_ax, cbar_kws=cbar_kws)
+    #
+    #             cbar = ax.collections[0].colorbar
+    #             # here set the labelsize by 20
+    #             cbar.ax.tick_params(labelsize=14)
+    #             cbar.ax.xaxis.label.set_size(20)
+    #         else:
+    #             cbar = False
+    #             cbar_ax = None
+    #             cbar_kws = None
+    #             sns.heatmap(sim,
+    #                         xticklabels=createLABELS(T),
+    #                         yticklabels=createLABELS(T), vmin=boundary1 - 0.05, vmax=boundary2, cmap=cmap, mask=mask,
+    #                         cbar=cbar, cbar_ax=cbar_ax, cbar_kws=cbar_kws)
+    #             ax.tick_params(labelsize=14)
+    #
+    #         ax.get_xaxis().tick_bottom()
+    #         ax.get_yaxis().tick_left()
+    #
+    #         ax.spines['top'].set_visible(False)
+    #         ax.spines['right'].set_visible(False)
+    #         ax.spines['bottom'].set_visible(False)
+    #         ax.spines['left'].set_visible(False)
+    #
+    #         if ix == 0:
+    #             plt.title(str(1 - pE0), fontsize=20)
+    #
+    #         if ix == len(cueValidityArr) - 1:
+    #             ax.set_xlabel('Time step', fontsize=20, labelpad=10)
+    #         else:
+    #             ax.get_xaxis().set_visible(False)
+    #
+    #         if jx == 0:
+    #             ax.yaxis.set_label_position("left")
+    #             ax.set_ylabel('%s' % yLabel, fontsize=20, labelpad=10)
+    #         if jx == len(priorE0Arr) - 1:
+    #             plt.ylabel(str(cueVal), labelpad=20, rotation='vertical', fontsize=20)
+    #             ax.yaxis.set_label_position("right")
+    #
+    #         jx += 1
+    #     ix += 1
+    #     plt.suptitle('Prior probability', fontsize=20)
+    #     fig.text(0.98, 0.5, 'Cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
+    #              transform=ax.transAxes, rotation='vertical')
+    # plt.savefig(os.path.join(twinResultsPath, 'rankOrderStabilityPos1%s.png' % distFun), dpi=1200)
+    # plt.close()
+    #
+    # # 3rd plot
+    # fig, axes = plt.subplots(len(priorE0Arr), len(cueValidityArr), sharex=True, sharey=True)
+    # fig.set_size_inches(16, 16)
+    # ax_list = fig.axes
+    # simRange = []
+    # for cueVal in cueValidityArr:
+    #     for pE0 in priorE0Arr:
+    #         rankMatrix = ranks[(pE0, cueVal)]
+    #
+    #         rankDf = pd.DataFrame(rankMatrix)
+    #         rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(axis=0)] + 0.1
+    #
+    #         if distFun == 'cosine':
+    #             sim = cosine_similarity(rankDf.transpose())
+    #         elif distFun == "negativeSwitches":
+    #             sim = calcNegativeRankSwitches(rankDf, T, 'unstable')
+    #
+    #         simRange += list(sim.flatten())
+    #
+    # ix = 0
+    # for cueVal in cueValidityArr:
+    #     jx = 0
+    #     for pE0 in priorE0Arr:
+    #         ax = ax_list[ix * len(priorE0Arr) + jx]
+    #         plt.sca(ax)
+    #         # loading the ranks for the current prior - cue reliability combination
+    #         rankMatrix = ranks[(pE0, cueVal)]
+    #
+    #         rankDf = pd.DataFrame(rankMatrix)  # convert to pandas dataframe for convenience
+    #         # add a small increment to columns that contain only zero entries, otherwise cosine similarity is not defined
+    #         rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(
+    #             axis=0)] + 0.1  # returns columns that are all zeros
+    #
+    #         # calculating the similarity matrix
+    #         if distFun == 'cosine':
+    #             sim = cosine_similarity(rankDf.transpose())
+    #         elif distFun == "negativeSwitches":
+    #             sim = calcNegativeRankSwitches(rankDf, T, 'unstable')
+    #
+    #         if jx == len(priorE0Arr) - 1 and ix == 0:
+    #             ax.bar(np.arange(1, T, 1), np.diag(sim, 1), linewidth=3, color='k', align='center', width=0.8)
+    #
+    #
+    #         else:
+    #             ax.bar(np.arange(1, T, 1), np.diag(sim, 1), linewidth=3, color='k', align='edge', width=0.8)
+    #
+    #         ax.get_xaxis().tick_bottom()
+    #         ax.get_yaxis().tick_left()
+    #
+    #         ax.spines['top'].set_visible(False)
+    #         ax.spines['right'].set_visible(False)
+    #         ax.spines['bottom'].set_visible(True)
+    #         ax.spines['left'].set_visible(False)
+    #
+    #         ax.set_ylim(0, 1)
+    #         plt.yticks([])
+    #         plt.xticks([])
+    #
+    #         if ix == 0:
+    #             plt.title(str(1 - pE0), fontsize=20)
+    #         #
+    #         # if jx == 0:
+    #         #     plt.title(str(cueVal), fontsize=30)
+    #         #
+    #         # if ix == 0 and jx == 0:
+    #         #     ax.set_xlabel('Time', fontsize=30, labelpad=10)
+    #         #     ax.spines['left'].set_visible(True)
+    #         #     ax.yaxis.set_label_position("left")
+    #         #     ax.set_ylabel('Proportion of rank switches', fontsize=30, labelpad=10)
+    #
+    #         if ix == len(cueValidityArr) - 1:
+    #             ax.set_xlabel('Time step', fontsize=20, labelpad=10)
+    #         else:
+    #             ax.get_xaxis().set_visible(False)
+    #
+    #         if jx == 0:
+    #             ax.yaxis.set_label_position("left")
+    #             ax.set_ylabel('Proportion of rank switches', fontsize=20, labelpad=10)
+    #
+    #         if jx == len(priorE0Arr) - 1:
+    #             plt.ylabel(str(cueVal), labelpad=20, rotation='vertical', fontsize=20)
+    #             ax.yaxis.set_label_position("right")
+    #
+    #         jx += 1
+    #     ix += 1
+    #     plt.suptitle('Prior probability', fontsize=20)
+    #     fig.text(0.98, 0.5, 'Cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
+    #              transform=ax.transAxes, rotation='vertical')
+    # plt.savefig(os.path.join(twinResultsPath, 'rankOrderStabilityPos2%s.png' % distFun), dpi=1200)
+    # plt.close()
+
+
+
+
+def plotBeliefAndPhenotypeDivergence(tValues, priorE0Arr, cueValidityArr, relativeDistanceDict, twinResultsPath,
+                        argument, adoptionType, lag, endOfExposure, beliefDict,
+                        relativeDistanceDictTemp):
+    fig, axes = plt.subplots(len(priorE0Arr), len(cueValidityArr), sharex=True, sharey=True)
     fig.set_size_inches(16, 16)
     ax_list = fig.axes
-    simRange = []
-    for cueVal in cueValidityArr:
-        for pE0 in priorE0Arr:
-            rankMatrix = ranks[(pE0, cueVal)]
-
-            rankDf = pd.DataFrame(rankMatrix)
-            rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(axis=0)] + 0.1
-
-            if distFun == 'cosine':
-                sim = cosine_similarity(rankDf.transpose())
-            elif distFun == "negativeSwitches":
-                sim = calcNegativeRankSwitches(rankDf, T, "stable")
-
-            simRange += list(sim.flatten())
-
-    boundary1 = min(simRange)
-    boundary2 = max(simRange)
 
     ix = 0
     for cueVal in cueValidityArr:
         jx = 0
         for pE0 in priorE0Arr:
             ax = ax_list[ix * len(priorE0Arr) + jx]
+
             plt.sca(ax)
-            # loading the ranks for the current prior - cue reliability combination
-            rankMatrix = ranks[(pE0, cueVal)]
 
-            rankDf = pd.DataFrame(rankMatrix)  # convert to pandas dataframe for convenience
-            # add a small increment to columns that contain only zero entries, otherwise cosine similarity is not defined
-            rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(
-                axis=0)] + 0.1  # returns columns that are all zeros
+            relativeDistance = relativeDistanceDict[(pE0, cueVal)]
 
-            # calculating the similarity matrix
-            if distFun == 'cosine':
-                sim = cosine_similarity(rankDf.transpose())
-                cmap = 'YlGnBu'
-                yLabel = 'Cosine similarity'
-            elif distFun == "negativeSwitches":
-                sim = calcNegativeRankSwitches(rankDf, T, 'stable')
-                cmap = 'Greys'  # 'YlGnBu'
-                yLabel = 'Time step'
+            relativeDistanceDiff = np.gradient(relativeDistance)
 
-            # only negative rank switches
 
-            # create a mask for the upper triangle
-            mask = np.tri(sim.shape[0], k=0)
-            if jx == len(priorE0Arr) - 1 and ix == 0:
-                cbar = True
-                cbar_ax = specialAx
-                cbar_kws = {"orientation": 'horizontal', "fraction": 0.15, "pad": 0.15,
-                            'label': "Proportion of stable ranks"}  # 'label':"Proportion of negative rank switches",
-                sns.heatmap(sim,
-                            xticklabels=createLABELS(T),
-                            yticklabels=createLABELS(T), vmin=boundary1 - 0.05, vmax=boundary2, cmap=cmap, mask=mask,
-                            cbar=cbar, cbar_ax=cbar_ax, cbar_kws=cbar_kws)
+            posBeliefDiffNoAverage = beliefDict[(pE0, cueVal)][:, 5] #measured at the end of ontogeny after the last cue
+            posBeliefDiffNoAverageDiff = np.gradient(posBeliefDiffNoAverage)
 
-                cbar = ax.collections[0].colorbar
-                # here set the labelsize by 20
-                cbar.ax.tick_params(labelsize=14)
-                cbar.ax.xaxis.label.set_size(20)
-            else:
-                cbar = False
-                cbar_ax = None
-                cbar_kws = None
-                sns.heatmap(sim,
-                            xticklabels=createLABELS(T),
-                            yticklabels=createLABELS(T), vmin=boundary1 - 0.05, vmax=boundary2, cmap=cmap, mask=mask,
-                            cbar=cbar, cbar_ax=cbar_ax, cbar_kws=cbar_kws)
-                ax.tick_params(labelsize=14)
+
+            plt.plot(tValues[0:], posBeliefDiffNoAverageDiff, color='grey', linestyle='solid', linewidth=2, markersize=5,
+                         marker='D',
+                         markerfacecolor='grey')
+
+            plt.plot(tValues[0:], relativeDistanceDiff, color='black', linestyle='solid', linewidth=2, markersize=5,
+                         marker='o',
+                         markerfacecolor='black')  # should be absolute distance
 
             ax.get_xaxis().tick_bottom()
             ax.get_yaxis().tick_left()
@@ -1197,118 +1363,47 @@ def plotRankOrderStability2(priorE0Arr, cueValidityArr, twinResultsPath, T, dist
             ax.spines['bottom'].set_visible(False)
             ax.spines['left'].set_visible(False)
 
-            if ix == 0:
-                plt.title(str(1 - pE0), fontsize=20)
-
-            if ix == len(cueValidityArr) - 1:
-                ax.set_xlabel('Time step', fontsize=20, labelpad=10)
-            else:
-                ax.get_xaxis().set_visible(False)
-
-            if jx == 0:
-                ax.yaxis.set_label_position("left")
-                ax.set_ylabel('%s' % yLabel, fontsize=20, labelpad=10)
-            if jx == len(priorE0Arr) - 1:
-                plt.ylabel(str(cueVal), labelpad=20, rotation='vertical', fontsize=20)
-                ax.yaxis.set_label_position("right")
-
-            jx += 1
-        ix += 1
-        plt.suptitle('Prior probability', fontsize=20)
-        fig.text(0.98, 0.5, 'Cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
-                 transform=ax.transAxes, rotation='vertical')
-    plt.savefig(os.path.join(twinResultsPath, 'rankOrderStabilityPos1%s.png' % distFun), dpi=400)
-    plt.close()
-
-    # 3rd plot
-    fig, axes = plt.subplots(len(priorE0Arr), len(cueValidityArr), sharex=True, sharey=True)
-    fig.set_size_inches(16, 16)
-    ax_list = fig.axes
-    simRange = []
-    for cueVal in cueValidityArr:
-        for pE0 in priorE0Arr:
-            rankMatrix = ranks[(pE0, cueVal)]
-
-            rankDf = pd.DataFrame(rankMatrix)
-            rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(axis=0)] + 0.1
-
-            if distFun == 'cosine':
-                sim = cosine_similarity(rankDf.transpose())
-            elif distFun == "negativeSwitches":
-                sim = calcNegativeRankSwitches(rankDf, T, 'unstable')
-
-            simRange += list(sim.flatten())
-
-    ix = 0
-    for cueVal in cueValidityArr:
-        jx = 0
-        for pE0 in priorE0Arr:
-            ax = ax_list[ix * len(priorE0Arr) + jx]
-            plt.sca(ax)
-            # loading the ranks for the current prior - cue reliability combination
-            rankMatrix = ranks[(pE0, cueVal)]
-
-            rankDf = pd.DataFrame(rankMatrix)  # convert to pandas dataframe for convenience
-            # add a small increment to columns that contain only zero entries, otherwise cosine similarity is not defined
-            rankDf.loc[:, (rankDf == 0.0).all(axis=0)] = rankDf.loc[:, (rankDf == 0.0).all(
-                axis=0)] + 0.1  # returns columns that are all zeros
-
-            # calculating the similarity matrix
-            if distFun == 'cosine':
-                sim = cosine_similarity(rankDf.transpose())
-            elif distFun == "negativeSwitches":
-                sim = calcNegativeRankSwitches(rankDf, T, 'unstable')
-
-            if jx == len(priorE0Arr) - 1 and ix == 0:
-                ax.bar(np.arange(1, T, 1), np.diag(sim, 1), linewidth=3, color='k', align='center', width=0.8)
-
-
-            else:
-                ax.bar(np.arange(1, T, 1), np.diag(sim, 1), linewidth=3, color='k', align='edge', width=0.8)
-
-            ax.get_xaxis().tick_bottom()
-            ax.get_yaxis().tick_left()
-
-            ax.spines['top'].set_visible(False)
-            ax.spines['right'].set_visible(False)
-            ax.spines['bottom'].set_visible(True)
-            ax.spines['left'].set_visible(False)
-
-            ax.set_ylim(0, 1)
-            plt.yticks([])
-            plt.xticks([])
+            plt.ylim(-0.4, 0.05)
+            plt.yticks([-0.3,0,0.05], fontsize=15)
 
             if ix == 0:
                 plt.title(str(1 - pE0), fontsize=20)
-            #
-            # if jx == 0:
-            #     plt.title(str(cueVal), fontsize=30)
-            #
-            # if ix == 0 and jx == 0:
-            #     ax.set_xlabel('Time', fontsize=30, labelpad=10)
-            #     ax.spines['left'].set_visible(True)
-            #     ax.yaxis.set_label_position("left")
-            #     ax.set_ylabel('Proportion of rank switches', fontsize=30, labelpad=10)
+
 
             if ix == len(cueValidityArr) - 1:
-                ax.set_xlabel('Time step', fontsize=20, labelpad=10)
+                plt.xticks([], fontsize = 15)
+
             else:
                 ax.get_xaxis().set_visible(False)
 
-            if jx == 0:
-                ax.yaxis.set_label_position("left")
-                ax.set_ylabel('Proportion of rank switches', fontsize=20, labelpad=10)
+            if jx == 0 and ix == len(cueValidityArr) - 1:
+                ax.spines['bottom'].set_visible(True)
+                ax.spines['left'].set_visible(True)
+                plt.xlabel("ontogeny", fontsize=20, labelpad=10)
+                plt.ylabel('gradient of plasticity curves', fontsize=20, labelpad=10)
 
             if jx == len(priorE0Arr) - 1:
-                plt.ylabel(str(cueVal), labelpad=20, rotation='vertical', fontsize=20)
+                plt.ylabel(str(cueVal), labelpad=30, rotation='vertical', fontsize=20)
                 ax.yaxis.set_label_position("right")
+
+            # plot lines for readeability
+
+            tValNew = np.arange(min(tValues)-0.5,max(tValues)+0.5+1,1)
+            plt.plot(tValNew, [1] * len(tValNew), ls='--', lw=0.8, color='black', zorder=2)
+            plt.plot(tValNew, [0] * len(tValNew), ls='--', lw=0.8, color='black', zorder=2)
 
             jx += 1
         ix += 1
-        plt.suptitle('Prior probability', fontsize=20)
-        fig.text(0.98, 0.5, 'Cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
+        plt.suptitle('prior probability', fontsize=20)
+        fig.text(0.98, 0.5, 'cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
                  transform=ax.transAxes, rotation='vertical')
-    plt.savefig(os.path.join(twinResultsPath, 'rankOrderStabilityPos2%s.png' % distFun), dpi=400)
+        if endOfExposure:
+            safeStr = "EndOfExposure"
+        else:
+            safeStr = "EndOfOntogeny"
+    plt.savefig(
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogenyDivergence.png' % (argument, adoptionType, lag, safeStr)),
+        dpi=1200)
     plt.close()
 
 
@@ -1351,17 +1446,30 @@ def plotBeliefDistances(tValues, priorE0Arr, cueValidityArr, relativeDistanceDic
             if ix == 0:
                 plt.title(str(1 - pE0), fontsize=20)
 
+
             if ix == len(cueValidityArr) - 1:
-                plt.xticks([])
+                plt.xticks([], fontsize = 15)
 
             else:
                 ax.get_xaxis().set_visible(False)
-            if jx == 0:
+
+
+            if jx == 0 and ix == len(cueValidityArr) - 1:
+                ax.spines['bottom'].set_visible(True)
+                ax.spines['left'].set_visible(True)
+                plt.xlabel("ontogeny", fontsize=20, labelpad=10)
                 plt.ylabel('divergence between twins', fontsize=20, labelpad=10)
 
             if jx == len(priorE0Arr) - 1:
                 plt.ylabel(str(cueVal), labelpad=30, rotation='vertical', fontsize=20)
                 ax.yaxis.set_label_position("right")
+
+            # plot lines for readeability
+
+            tValNew = np.arange(min(tValues)-0.5,max(tValues)+0.5+1,1)
+            plt.plot(tValNew, [1] * len(tValNew), ls='--', lw=0.8, color='black', zorder=2)
+            plt.plot(tValNew, [0] * len(tValNew), ls='--', lw=0.8, color='black', zorder=2)
+
             jx += 1
         ix += 1
         plt.suptitle('prior probability', fontsize=20)
@@ -1372,7 +1480,7 @@ def plotBeliefDistances(tValues, priorE0Arr, cueValidityArr, relativeDistanceDic
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogeny.pdf' % (argument, adoptionType, lag, safeStr)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogeny.png' % (argument, adoptionType, lag, safeStr)),
         dpi=1200)
     plt.close()
 
@@ -1416,17 +1524,30 @@ def plotBeliefDistances(tValues, priorE0Arr, cueValidityArr, relativeDistanceDic
             if ix == 0:
                 plt.title(str(1 - pE0), fontsize=20)
 
+
             if ix == len(cueValidityArr) - 1:
-                plt.xticks([])
+                plt.xticks([], fontsize = 15)
 
             else:
                 ax.get_xaxis().set_visible(False)
-            if jx == 0:
+
+
+            if jx == 0 and ix == len(cueValidityArr) - 1:
+                ax.spines['bottom'].set_visible(True)
+                ax.spines['left'].set_visible(True)
+                plt.xlabel("ontogeny", fontsize=20, labelpad=10)
                 plt.ylabel('divergence between twins', fontsize=20, labelpad=10)
+
 
             if jx == len(priorE0Arr) - 1:
                 plt.ylabel(str(cueVal), labelpad=30, rotation='vertical', fontsize=20)
                 ax.yaxis.set_label_position("right")
+
+            # plot lines for readeability
+            tValNew = np.arange(min(tValues) - 0.5, max(tValues) + 0.5 + 1, 1)
+            plt.plot(tValNew, [1] * len(tValNew), ls='--', lw=0.8, color='black', zorder=2)
+            plt.plot(tValNew, [0] * len(tValNew), ls='--', lw=0.8, color='black', zorder=2)
+
             jx += 1
         ix += 1
         plt.suptitle('prior probability', fontsize=20)
@@ -1437,7 +1558,7 @@ def plotBeliefDistances(tValues, priorE0Arr, cueValidityArr, relativeDistanceDic
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefAfterCue.pdf' % (argument, adoptionType, lag, safeStr)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefAfterCue.png' % (argument, adoptionType, lag, safeStr)),
         dpi=1200)
     plt.close()
 
@@ -1488,23 +1609,39 @@ def plotDistances(tValues, priorE0Arr, cueValidityArr, absoluteDistanceDict, rel
             ax.spines['bottom'].set_visible(False)
             ax.spines['left'].set_visible(False)
 
+
+
+
             plt.ylim(-0.05, 1.05)
             plt.yticks(np.arange(0,1.1,0.2), fontsize = 15)
 
             if ix == 0:
                 plt.title(str(1 - pE0), fontsize=20)
 
+
             if ix == len(cueValidityArr) - 1:
-                plt.xticks([])
+                plt.xticks([], fontsize = 15)
 
             else:
                 ax.get_xaxis().set_visible(False)
-            if jx == 0:
+
+
+            if jx == 0 and ix == len(cueValidityArr) - 1:
+                ax.spines['bottom'].set_visible(True)
+                ax.spines['left'].set_visible(True)
+                plt.xlabel("ontogeny", fontsize=20, labelpad=10)
                 plt.ylabel('phenotypic distance', fontsize=20, labelpad=10)
 
-            if jx == len(priorE0Arr) - 1:
+
+            elif jx == len(priorE0Arr) - 1:
                 plt.ylabel(str(cueVal), labelpad=30, rotation='vertical', fontsize=20)
                 ax.yaxis.set_label_position("right")
+
+
+            # plot lines for readeability
+            plt.plot(tValues,[1]*len(tValues), ls = '--', lw = 0.8, color = '#B8B8B8', zorder = -1)
+            plt.plot(tValues, [0] * len(tValues), ls='--', lw=0.8, color='#B8B8B8', zorder = -1)
+
             jx += 1
         ix += 1
         plt.suptitle('prior probability', fontsize=20)
@@ -1515,7 +1652,7 @@ def plotDistances(tValues, priorE0Arr, cueValidityArr, absoluteDistanceDict, rel
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticity%s.pdf' % (argument, adoptionType, lag, safeStr, VarArg)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticity%s.png' % (argument, adoptionType, lag, safeStr, VarArg)),
         dpi=1200)
     plt.close()
 
@@ -1738,6 +1875,9 @@ def plotSimulationStudy(argument, priorE0Arr, cueValidityC0E0Arr, T, twinResults
         plotBeliefDistances(tValues, priorE0Arr, cueValidityC0E0Arr, relativeDistanceDict, twinResultsPath,
                             argument, adoptionType, lag, endOfExposure, beliefDict,
                             relativeDistanceDictTemp)
+        plotBeliefAndPhenotypeDivergence(tValues, priorE0Arr, cueValidityC0E0Arr, relativeDistanceDict, twinResultsPath,
+                            argument, adoptionType, lag, endOfExposure, beliefDict,
+                            relativeDistanceDictTemp)
 
     elif argument == "Twinstudy":
 
@@ -1802,10 +1942,6 @@ def runPlots(priorE0Arr, cueValidityC0E0Arr, TParam, numAgents, twinResultsPath,
                                               endOfExposure)
                 plotSimulationStudy(arg, priorE0Arr, cueValidityC0E0Arr, T, twinResultsPath, lag, adoptionType,
                                     endOfExposure, plotVar)
-        elif arg == 'BeliefTwinstudy':
-            T = TParam
-            plotSimulationStudy(arg, markovProbabilities, cueValidityC0E0Arr, T, twinResultsPath, None, adoptionType,
-                                endOfExposure, plotVar)
 
         else:
             T = TParam
