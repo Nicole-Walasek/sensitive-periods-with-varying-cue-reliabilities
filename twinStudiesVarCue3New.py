@@ -1120,7 +1120,7 @@ def plotRankOrderStability2(priorE0Arr, cueValidityArr, twinResultsPath, T, dist
         plt.suptitle('prior probability', fontsize=20)
         fig.text(0.98, 0.5, 'cue reliability', fontsize=20, horizontalalignment='right', verticalalignment='center',
                  transform=ax.transAxes, rotation='vertical')
-    plt.savefig(os.path.join(twinResultsPath, 'rankOrderStability2%s.png' % distFun), dpi=1200)
+    plt.savefig(os.path.join(twinResultsPath, 'rankOrderStability2%s.tif' % distFun), dpi=1200)
     plt.close()
 
     # # second plot is for rank stability
@@ -1402,7 +1402,7 @@ def plotBeliefAndPhenotypeDivergence(tValues, priorE0Arr, cueValidityArr, relati
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogenyDivergence.png' % (argument, adoptionType, lag, safeStr)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogenyDivergence.pdf' % (argument, adoptionType, lag, safeStr)),
         dpi=1200)
     plt.close()
 
@@ -1480,7 +1480,7 @@ def plotBeliefDistances(tValues, priorE0Arr, cueValidityArr, relativeDistanceDic
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogeny.png' % (argument, adoptionType, lag, safeStr)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefEndOntogeny.tif' % (argument, adoptionType, lag, safeStr)),
         dpi=1200)
     plt.close()
 
@@ -1558,7 +1558,7 @@ def plotBeliefDistances(tValues, priorE0Arr, cueValidityArr, relativeDistanceDic
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefAfterCue.png' % (argument, adoptionType, lag, safeStr)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticityAndBeliefAfterCue.pdf' % (argument, adoptionType, lag, safeStr)),
         dpi=1200)
     plt.close()
 
@@ -1652,7 +1652,7 @@ def plotDistances(tValues, priorE0Arr, cueValidityArr, absoluteDistanceDict, rel
         else:
             safeStr = "EndOfOntogeny"
     plt.savefig(
-        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticity%s.png' % (argument, adoptionType, lag, safeStr, VarArg)),
+        os.path.join(twinResultsPath, '%s_%s_%s_%sPlasticity%s.tif' % (argument, adoptionType, lag, safeStr, VarArg)),
         dpi=1200)
     plt.close()
 

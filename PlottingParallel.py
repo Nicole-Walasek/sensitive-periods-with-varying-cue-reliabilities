@@ -296,12 +296,14 @@ def policyPlotReduced(T,r,pE0Arr, pC0E0Arr, tValues, dataPath, lines, argumentR,
             else:
                 ax.get_xaxis().set_visible(False)
 
+            if jX == 0:
+                plt.yticks([1, midPoint, T - 1], yLabels, fontsize=15)
 
             if jX == 0 and iX == len(pC0E0Arr) - 1:
                 ax.spines['bottom'].set_visible(True)
                 ax.spines['left'].set_visible(True)
                 plt.xlabel("ontogeny", fontsize=20, labelpad=10)
-                plt.yticks([1, midPoint, T - 1], yLabels, fontsize=12)
+                plt.yticks([1, midPoint, T - 1], yLabels, fontsize=15)
                 plt.ylabel('estimate', fontsize=20, labelpad=10)
 
 
@@ -317,7 +319,7 @@ def policyPlotReduced(T,r,pE0Arr, pC0E0Arr, tValues, dataPath, lines, argumentR,
     plt.suptitle('prior probability', fontsize = 20)
     fig.text(0.98,0.5,'cue reliability', fontsize = 20, horizontalalignment = 'right', verticalalignment = 'center', transform=ax.transAxes, rotation = 'vertical')
     resultPath = os.path.join(mainPath, plottingPath)
-    plt.savefig(os.path.join(resultPath,'DevelopmentalTrajectoryReduced.png'), dpi = 1200)
+    plt.savefig(os.path.join(resultPath,'DevelopmentalTrajectoryReduced.tif'), dpi = 1200)
 
 
 

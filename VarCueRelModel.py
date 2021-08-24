@@ -687,11 +687,11 @@ if __name__ == '__main__':
     optimalPolicyFlag = False #would you like to compute the optimal policy
     preparePlottingFlag = False# would you like to prepare the policy for plotting?
     plotFlag = True # would you like to plot the aggregated data?
-    performSimulation = True  # do you need to simulate data based on the "preapredPlotting data" for plotting?; i.e.,
+    performSimulation = False  # do you need to simulate data based on the "preapredPlotting data" for plotting?; i.e.,
                                 # simulate twins and/or mature phenotypes
 
     # this is the directory where modeling results are stored
-    mainPath = "ADD PATH"
+    mainPath = "/home/nicole/PhD/Proejct1 varying cue reliabilities/temporaryVarCue/21timesteps/resultsLatestRun"
     if not os.path.exists(mainPath):
         os.makedirs(mainPath)
     # setting a prior (or an array of priors in case we want to do multiple runs at once)
@@ -703,8 +703,8 @@ if __name__ == '__main__':
     batchSize = 10000  # how large should parallalizable units be
 
 
-    argumentRArr = ['linear']  # string specifying the additive fitness reward; can pass multiple arguments in here
-    argumentPArr = ['linear']  # string specifying the additive fitness penalty
+    argumentRArr = ['linear']#,'increasing', 'diminishing']  # string specifying the additive fitness reward; can pass multiple arguments in here
+    argumentPArr = ['linear']#, 'increasing', 'diminishing']  # string specifying the additive fitness penalty
 
 
     # parameters for the some of the internal functions (specifically the phenotype to fitness mapping),
@@ -741,7 +741,7 @@ if __name__ == '__main__':
     # first make sure that results are saved properly
 
     # make sure the directories on the HDD (or wherever you have sufficient storage space) are in place for storage of large files
-    dataPath = '/mnt/7f62305c-e92d-4ce6-9258-add57f36681a/Results'
+    dataPath = '/mnt/f28c380a-3bef-40eb-8061-de162309442d/programming/varying cue reliabilities'
     if not os.path.exists(dataPath):
         os.makedirs(dataPath)
 
@@ -839,53 +839,54 @@ if __name__ == '__main__':
                 minProb = 0.005 # minimal probability of reaching a state for those that are displayed
 
                 policyPlotReduced(int(T), r, priorE0Arr, cueValidityC0E0Arr, np.arange(1, int(T), 1), dataPath2, True,
-                           argumentR, argumentP, minProb,
-                           mainPath, twinResultsPath)
-
+                          argumentR, argumentP, minProb,
+                          mainPath, twinResultsPath)
 
                 os.chdir(mainPath)
-                numAgents = 10000
+                numAgents = 2500
                 baselineFitness = 0
                 lag = [5] # number of discrete time steps that twins are separated
                 endOfExposure = False
                 adoptionType = "yoked"
                 plotVar = False # do you want to plot variance in phenotypic distances?
 
-                plotArgs = ["RankOrderStability","MaturePhenotypes","FitnessDifference"]
+                plotArgs = ["RankOrderStability"] #,"MaturePhenotypes","FitnessDifference"
                 runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
-                          mainPath, argumentR,argumentP, lag, adoptionType, endOfExposure, plotArgs, plotVar,performSimulation)
+                         mainPath, argumentR,argumentP, lag, adoptionType, endOfExposure, plotArgs, plotVar,performSimulation)
+
                 '''
                 The subsequent code block is specifically for variants of adoption studies
                 '''
-                plotArgs = ["Twinstudy","BeliefTwinstudy"]
-                for adoptionType in ["yoked", "oppositePatch", "deprivation"]:#,"oppositePatch","deprivation"]:
+                plotArgs = ["Twinstudy", "BeliefTwinstudy"] # , "BeliefTwinstudy"
+                for adoptionType in ["yoked"]:#, "oppositePatch", "deprivation"]:#,"oppositePatch","deprivation"]:
                     print "adoptionType: " +str(adoptionType)
                     runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
                             mainPath, argumentR,
                             argumentP, lag, adoptionType, endOfExposure, plotArgs, plotVar,performSimulation)
 
-                """
-                Code for plotting variance around the plasticity curve
-                """
-                runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
-                        mainPath, argumentR,
-                        argumentP, lag, "yoked", endOfExposure, ["Twinstudy"], True,performSimulation)
+                #
+                # """
+                # Code for plotting variance around the plasticity curve
+                # """
+                # runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
+                #         mainPath, argumentR,
+                #         argumentP, lag, "yoked", endOfExposure, ["Twinstudy"], True,performSimulation)
 
 
-                plotArgs = ["ExperimentalTwinstudy"]
-                for adoptionType in ["yoked", "oppositePatch", "deprivation"]:
-                    print "adoptionType: " + str(adoptionType)
-                    print "computing plasticity following temporary separation measured at the end of ontogeny"
-                    runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath,
-                             baselineFitness,
-                             mainPath, argumentR,
-                             argumentP, lag, adoptionType, endOfExposure, plotArgs, plotVar,performSimulation)
-
-                    # now run the experimental twinstudy with end of exposure set to true
-                    print "computing plasticity following temporary separation measured at the end of exposure"
-                    runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
-                             mainPath, argumentR,
-                             argumentP, lag, adoptionType, True,plotArgs, plotVar,performSimulation)
+                # plotArgs = ["ExperimentalTwinstudy"]
+                # for adoptionType in ["yoked"]:#, "oppositePatch", "deprivation"]:
+                #     print "adoptionType: " + str(adoptionType)
+                #     print "computing plasticity following temporary separation measured at the end of ontogeny"
+                #     runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath,
+                #              baselineFitness,
+                #              mainPath, argumentR,
+                #              argumentP, lag, adoptionType, endOfExposure, plotArgs, plotVar,performSimulation)
+                #
+                #     # now run the experimental twinstudy with end of exposure set to true
+                #     print "computing plasticity following temporary separation measured at the end of exposure"
+                #     runPlots(priorE0Arr, cueValidityC0E0Arr, int(T) - 1, numAgents, twinResultsPath, baselineFitness,
+                #              mainPath, argumentR,
+                #              argumentP, lag, adoptionType, True, plotArgs,plotVar,performSimulation)
 
 
 
